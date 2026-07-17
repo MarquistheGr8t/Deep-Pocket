@@ -249,7 +249,51 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 .toggle-sw.on::after{transform:translateX(19px);}
 .version-badge{text-align:center;padding:18px 0;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;}
 
-/* ══ AUTH SCREEN ══ */
+/* ══ LOOP PACKS ══ */
+.loops-body{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;padding:0 0 12px;}
+.loops-body::-webkit-scrollbar{display:none;}
+.pack-section{margin:14px 16px 0;}
+.pack-section-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;user-select:none;}
+.pack-section-header.open{border-radius:var(--radius) var(--radius) 0 0;border-bottom-color:transparent;}
+.pack-section-left{display:flex;align-items:center;gap:12px;}
+.pack-section-icon{font-size:22px;}
+.pack-section-name{font-family:var(--serif);font-size:17px;color:var(--text);}
+.pack-section-meta{font-family:var(--mono);font-size:10px;color:var(--sub);margin-top:2px;}
+.pack-section-right{display:flex;align-items:center;gap:8px;}
+.pack-badge{font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.badge-free{background:rgba(61,214,140,0.12);color:var(--green);border:1px solid rgba(61,214,140,0.25);}
+.badge-coming{background:var(--card2);color:var(--sub);border:1px solid var(--border2);}
+.badge-new{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(232,184,50,0.25);}
+.pack-chevron{color:var(--sub);font-size:14px;transition:transform 0.2s;}
+.pack-section-header.open .pack-chevron{transform:rotate(180deg);}
+.pack-tracks{background:var(--card);border:1px solid var(--border2);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;display:none;}
+.pack-tracks.open{display:block;}
+.track-row{display:flex;align-items:center;padding:11px 14px;gap:12px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+.track-row:last-child{border-bottom:none;}
+.track-row:active{background:var(--card2);}
+.track-row.disabled{opacity:0.45;cursor:default;}
+.play-btn{width:32px;height:32px;border-radius:50%;background:var(--card2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all 0.15s;}
+.track-row:not(.disabled):hover .play-btn{background:var(--accent);border-color:var(--accent);color:#000;}
+.play-btn.playing{background:var(--accent);border-color:var(--accent);color:#000;box-shadow:0 0 10px rgba(232,184,50,0.35);}
+.track-info{flex:1;min-width:0;}
+.track-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.track-meta{font-family:var(--mono);font-size:10px;color:var(--sub);}
+.track-dur{font-family:var(--mono);font-size:11px;color:var(--sub);flex-shrink:0;}
+.track-lock{font-size:14px;color:var(--muted);}
+.coming-soon-row{padding:16px 14px;text-align:center;font-size:13px;color:var(--sub);line-height:1.6;}
+.coming-soon-row b{color:var(--text);}
+
+/* Now playing bar */
+.now-playing-bar{background:var(--surface);border-top:1px solid var(--border);padding:10px 16px;display:none;align-items:center;gap:12px;flex-shrink:0;}
+.now-playing-bar.show{display:flex;}
+.np-info{flex:1;min-width:0;}
+.np-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.np-pack{font-family:var(--mono);font-size:10px;color:var(--sub);}
+.np-progress{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;min-width:60px;}
+.np-fill{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width 0.1s linear;}
+.np-controls{display:flex;align-items:center;gap:10px;}
+.np-ctrl{font-size:18px;cursor:pointer;color:var(--text2);}
+.np-ctrl:active{color:var(--accent);}
 .auth-screen{position:fixed;inset:0;background:var(--bg);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px max(32px,env(safe-area-inset-bottom));animation:fadeUp 0.3s ease;}
 .auth-screen.hidden{display:none;}
 .auth-logo{font-family:var(--serif);font-style:italic;font-size:64px;color:var(--accent);margin-bottom:6px;line-height:1;text-shadow:0 0 40px rgba(232,184,50,0.2);}
@@ -758,10 +802,182 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
         </div>
       </div>
     </div>
-    <div style="padding:24px 22px;text-align:center;color:var(--sub);font-size:13px;line-height:1.6;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-      <div style="font-size:42px;margin-bottom:16px;opacity:0.4">🎧</div>
-      <div style="font-family:var(--serif);font-size:18px;color:var(--text);margin-bottom:6px">Loop Packs Coming Soon</div>
-      <div style="max-width:260px">Worship grooves, gospel fills, and ambient pads will arrive in the next update.</div>
+    <div class="loops-body" id="loopsBody">
+
+      <!-- FREE PACK -->
+      <div class="pack-section">
+        <div class="pack-section-header" id="pack-worship-header" onclick="togglePack('worship')">
+          <div class="pack-section-left">
+            <div class="pack-section-icon">🙏</div>
+            <div>
+              <div class="pack-section-name">Worship Essentials</div>
+              <div class="pack-section-meta">Coming soon · Various BPM</div>
+            </div>
+          </div>
+          <div class="pack-section-right">
+            <div class="pack-badge badge-free">FREE</div>
+            <div class="pack-chevron">▾</div>
+          </div>
+        </div>
+        <div class="pack-tracks" id="pack-worship-tracks">
+          <div class="coming-soon-row">
+            <b>Loops coming soon</b><br>
+            Marquis is recording real worship grooves.<br>
+            These will be your free starter pack.
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Sunday Groove</div><div class="track-meta">72 BPM · 4/4 · Worship</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Ballad Feel</div><div class="track-meta">68 BPM · 4/4 · Ballad</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">CCM Drive</div><div class="track-meta">96 BPM · 4/4 · CCM</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOSPEL PACK -->
+      <div class="pack-section">
+        <div class="pack-section-header" id="pack-gospel-header" onclick="togglePack('gospel')">
+          <div class="pack-section-left">
+            <div class="pack-section-icon">🔥</div>
+            <div>
+              <div class="pack-section-name">Gospel Fire Vol. 1</div>
+              <div class="pack-section-meta">Coming soon · 80–120 BPM</div>
+            </div>
+          </div>
+          <div class="pack-section-right">
+            <div class="pack-badge badge-coming">COMING SOON</div>
+            <div class="pack-chevron">▾</div>
+          </div>
+        </div>
+        <div class="pack-tracks" id="pack-gospel-tracks">
+          <div class="coming-soon-row">
+            <b>Gospel grooves loading up</b><br>
+            Shout patterns, praise breaks, and half-time feels.<br>
+            Available as a loop pack soon.
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Praise Break</div><div class="track-meta">108 BPM · 4/4 · Gospel</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Shout Pattern</div><div class="track-meta">120 BPM · 4/4 · Gospel</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Half-Time Worship</div><div class="track-meta">80 BPM · 4/4 · CCM</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AMBIENT PACK -->
+      <div class="pack-section">
+        <div class="pack-section-header" id="pack-ambient-header" onclick="togglePack('ambient')">
+          <div class="pack-section-left">
+            <div class="pack-section-icon">🌊</div>
+            <div>
+              <div class="pack-section-name">Ambient Worship</div>
+              <div class="pack-section-meta">Coming soon · Free tempo pads</div>
+            </div>
+          </div>
+          <div class="pack-section-right">
+            <div class="pack-badge badge-coming">COMING SOON</div>
+            <div class="pack-chevron">▾</div>
+          </div>
+        </div>
+        <div class="pack-tracks" id="pack-ambient-tracks">
+          <div class="coming-soon-row">
+            <b>Ambient pads and textures</b><br>
+            No drums — just atmosphere for those slow, open worship moments.
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Open Pad — C</div><div class="track-meta">Free tempo · Ambient</div></div>
+            <div class="track-dur">4:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Open Pad — G</div><div class="track-meta">Free tempo · Ambient</div></div>
+            <div class="track-dur">4:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CCM PACK -->
+      <div class="pack-section">
+        <div class="pack-section-header" id="pack-ccm-header" onclick="togglePack('ccm')">
+          <div class="pack-section-left">
+            <div class="pack-section-icon">✨</div>
+            <div>
+              <div class="pack-section-name">CCM Textures</div>
+              <div class="pack-section-meta">Coming soon · 65–100 BPM</div>
+            </div>
+          </div>
+          <div class="pack-section-right">
+            <div class="pack-badge badge-coming">COMING SOON</div>
+            <div class="pack-chevron">▾</div>
+          </div>
+        </div>
+        <div class="pack-tracks" id="pack-ccm-tracks">
+          <div class="coming-soon-row">
+            <b>Contemporary worship grooves</b><br>
+            Driving 8ths, building choruses, anthem feels.
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Anthem Build</div><div class="track-meta">92 BPM · 4/4 · CCM</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+          <div class="track-row disabled">
+            <div class="play-btn">▶</div>
+            <div class="track-info"><div class="track-name">Driving 8ths</div><div class="track-meta">100 BPM · 4/4 · CCM</div></div>
+            <div class="track-dur">2:00</div>
+            <div class="track-lock">⏳</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:20px 16px;text-align:center;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--sub);letter-spacing:1px;line-height:1.8;">
+          MORE PACKS DROPPING SOON<br>
+          <span style="color:var(--accent);">DEEP POCKET · THE JAMES WAY MEDIA LLC</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Now Playing Bar -->
+    <div class="now-playing-bar" id="nowPlayingBar">
+      <div class="np-info">
+        <div class="np-name" id="npTrackName">—</div>
+        <div class="np-pack" id="npPackName">—</div>
+      </div>
+      <div class="np-progress"><div class="np-fill" id="npFill"></div></div>
+      <div class="np-controls">
+        <span class="np-ctrl" onclick="stopLoop()">⏹</span>
+        <span class="np-ctrl" id="npPlayBtn" onclick="toggleLoopPlay()">⏸</span>
+      </div>
     </div>
     <div class="tab-bar">
       <div class="tab-item" onclick="goTab('songs')"><div class="tab-icon">🎵</div><div class="tab-label">SONGS</div></div>
@@ -816,7 +1032,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
           <div class="settings-row"><div class="s-icon">🏢</div><div class="s-info"><div class="s-title">The James Way Media LLC</div><div class="s-sub">Built by drummers, for drummers</div></div></div>
         </div>
       </div>
-      <div class="version-badge">Deep Pocket Web v1.10 · Beta</div>
+      <div class="version-badge">Deep Pocket Web v1.11 · Beta</div>
     </div>
     <div class="tab-bar">
       <div class="tab-item" onclick="goTab('songs')"><div class="tab-icon">🎵</div><div class="tab-label">SONGS</div></div>
@@ -1861,6 +2077,45 @@ function friendlyAuthError(msg){
   if(msg.includes('Password should be')) return 'Password must be at least 6 characters.';
   if(msg.includes('Unable to validate')) return 'Invalid email address.';
   return msg;
+}
+
+/* ══ LOOP PACKS ══ */
+let activePack = null;
+
+function togglePack(name){
+  const header = document.getElementById('pack-'+name+'-header');
+  const tracks = document.getElementById('pack-'+name+'-tracks');
+  if(!header || !tracks) return;
+  const isOpen = tracks.classList.contains('open');
+  // Close all packs first
+  document.querySelectorAll('.pack-tracks').forEach(t=>t.classList.remove('open'));
+  document.querySelectorAll('.pack-section-header').forEach(h=>h.classList.remove('open'));
+  // Open clicked one if it was closed
+  if(!isOpen){
+    tracks.classList.add('open');
+    header.classList.add('open');
+  }
+}
+
+let loopPlaying = false;
+let loopInterval = null;
+let loopProgress = 0;
+
+function playLoop(trackName, packName, bpm){
+  // Loops aren't live yet — show a friendly message
+  showToast('Loops coming soon — stay tuned 🥁');
+}
+
+function toggleLoopPlay(){
+  loopPlaying = !loopPlaying;
+  document.getElementById('npPlayBtn').textContent = loopPlaying ? '⏸' : '▶';
+}
+
+function stopLoop(){
+  loopPlaying = false;
+  clearInterval(loopInterval);
+  document.getElementById('nowPlayingBar').classList.remove('show');
+  document.querySelectorAll('.play-btn').forEach(b=>{ b.classList.remove('playing'); b.textContent='▶'; });
 }
 
 /* ══ UTILS ══ */
