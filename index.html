@@ -816,7 +816,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
           <div class="settings-row"><div class="s-icon">🏢</div><div class="s-info"><div class="s-title">The James Way Media LLC</div><div class="s-sub">Built by drummers, for drummers</div></div></div>
         </div>
       </div>
-      <div class="version-badge">Deep Pocket Web v1.9 · Beta</div>
+      <div class="version-badge">Deep Pocket Web v1.10 · Beta</div>
     </div>
     <div class="tab-bar">
       <div class="tab-item" onclick="goTab('songs')"><div class="tab-icon">🎵</div><div class="tab-label">SONGS</div></div>
@@ -1831,11 +1831,23 @@ function updateAccountBar(user){
 function setSyncStatus(status){
   const dot = document.getElementById('syncDot');
   const lbl = document.getElementById('syncLabel');
-  if(!dot) return;
-  dot.className = 'sync-dot';
-  if(status==='synced'){ dot.classList.add(''); lbl.textContent='synced'; dot.style.background='var(--green)'; }
-  else if(status==='syncing'){ dot.classList.add('syncing'); lbl.textContent='syncing…'; dot.style.background='var(--accent)'; }
-  else { dot.style.background='var(--sub)'; lbl.textContent='offline'; }
+  if(!dot || !lbl) return;
+  // Remove all status classes safely
+  dot.classList.remove('syncing');
+  if(status==='synced'){
+    dot.style.background='var(--green)';
+    dot.style.boxShadow='0 0 5px rgba(61,214,140,0.5)';
+    lbl.textContent='synced';
+  } else if(status==='syncing'){
+    dot.classList.add('syncing');
+    dot.style.background='var(--accent)';
+    dot.style.boxShadow='none';
+    lbl.textContent='syncing…';
+  } else {
+    dot.style.background='var(--sub)';
+    dot.style.boxShadow='none';
+    lbl.textContent='offline';
+  }
 }
 function showAuthMsg(el, type, text){
   el.textContent = text;
